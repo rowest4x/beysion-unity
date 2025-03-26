@@ -30,8 +30,6 @@ public class SceneManager2 : MonoBehaviour
     TcpClient tcpClient;
     NetworkStream stream;
     bool isCalibrating = false;
-    public VideoClip calibrationClip; // キャリブレーション用の動画をInspectorから設定
-
 
     public Camera MainCamera;
     public GameObject CountdownPrefab;
@@ -41,6 +39,9 @@ public class SceneManager2 : MonoBehaviour
 
     // VideoPlayer定義
     public VideoPlayer video;
+
+    public VideoClip countdownClip; // カウントダウン用の動画をInspectorから設定
+    public VideoClip calibrationClip; // キャリブレーション用の動画をInspectorから設定
 
     // Dictionaryクラスの宣言と初期化
     public Dictionary<int, GameObject> beys = new Dictionary<int, GameObject>();        // Key:BeyID, Value:GameObject
@@ -170,13 +171,14 @@ public class SceneManager2 : MonoBehaviour
         }
 
         // Sキーを入力するとカウントダウン再生
-        if(Input.GetKey(KeyCode.S) && !isPlaying)
+        if (Input.GetKey(KeyCode.S) && !isPlaying && !isCalibrating)
         {
-            StartCoroutine(playCountdown());
+            isPlaying = true;
+            StartCoroutine(playVideo(countdownClip));
         }
 
         // Cキーを入力するとキャリブレーション要求
-        if (Input.GetKeyDown(KeyCode.C) && !isCalibrating)
+        if (Input.GetKeyDown(KeyCode.C) && !isCalibrating && !isPlaying)
         {
             StartCoroutine(SendCalibrationRequest());
         }
@@ -204,40 +206,6 @@ public class SceneManager2 : MonoBehaviour
         y = (-(y / 350.0f) * 13.0f + 6.25f) * 10.0f;     // プロジェクターから見て上下
 
         return new Vector3(x, 1.0f, y);
-    }
-
-    //IEnumerator
-    private IEnumerator playCountdown()
-    {
-        isPlaying = true;
-
-        GameObject countdownObj = Instantiate(CountdownPrefab, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
-        video = countdownObj.GetComponentInChildren<VideoPlayer>();
-
-        Canvas canvas = CountdownPrefab.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        canvas.worldCamera = MainCamera;
-        canvas.planeDistance = cameraDistance;
-
-        // 動画の再生準備完了まで待機
-        video.Prepare();
-        while (!video.isPrepared)
-            yield return null;
-
-        // 動画の再生開始（再生完了まで待つ）
-        video.Play();
-
-        Debug.Log("Play Video");
-
-        while (video.isPlaying)
-            yield return null;
-
-        //動画の再生完了
-        video.clip = null;
-
-        Destroy(countdownObj);
-
-        isPlaying = false;
     }
 
     // エフェクトの切り替え入力
@@ -292,24 +260,8 @@ public class SceneManager2 : MonoBehaviour
     {
         isCalibrating = true;
 
-        // 動画オブジェクトを生成し、表示設定
-        GameObject countdownObj = Instantiate(CountdownPrefab, Vector3.zero, Quaternion.identity);
-        video = countdownObj.GetComponentInChildren<VideoPlayer>();
-
-        Canvas canvas = CountdownPrefab.GetComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        canvas.worldCamera = MainCamera;
-        canvas.planeDistance = cameraDistance;
-
-        // 動画クリップを設定して準備
-        video.clip = calibrationClip;
-        video.Prepare();
-        while (!video.isPrepared)
-            yield return null;
-
-        // 再生開始
-        video.Play();
-        Debug.Log("calibration video starts");
+        // 動画を再生
+        StartCoroutine(playVideo(calibrationClip));
 
         // 3秒待ってからキャリブレーション要求送信
         yield return new WaitForSeconds(3f);
@@ -325,10 +277,10 @@ public class SceneManager2 : MonoBehaviour
             Debug.LogError("TCP transmission failed: " + e.Message);
         }
 
-        // 応答を待つ（任意）
+        // 応答を待つ（必要なら）
         byte[] buffer = new byte[1024];
         string response = "";
-        float timeout = 4.0f; // 応答待ち最大4秒（必要なら）
+        float timeout = 4.0f;
         float elapsed = 0f;
 
         while (elapsed < timeout)
@@ -344,17 +296,14 @@ public class SceneManager2 : MonoBehaviour
             yield return null;
         }
 
-        // 動画の再生終了を待つ
-        while (video.isPlaying)
-            yield return null;
-
-        Destroy(countdownObj);
         isCalibrating = false;
     }
 
     // 動画再生
     private IEnumerator playVideo(VideoClip clip)
     {
+        isPlaying = true;
+
         GameObject countdownObj = Instantiate(CountdownPrefab, Vector3.zero, Quaternion.identity);
         video = countdownObj.GetComponentInChildren<VideoPlayer>();
 
@@ -373,5 +322,6 @@ public class SceneManager2 : MonoBehaviour
             yield return null;
 
         Destroy(countdownObj);
+        isPlaying = false;
     }
 }

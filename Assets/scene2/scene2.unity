@@ -176,7 +176,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78834a32231c9c2419cbe479587ecd6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  calibrationClip: {fileID: 32900000, guid: 703372d29fc08d847a8fafb0bcba5d55, type: 3}
   MainCamera: {fileID: 1716118120}
   CountdownPrefab: {fileID: 8584363615772389076, guid: c42012ddc4ace2043bc7bd64eb886064, type: 3}
   HitEffectPrefab:
@@ -195,6 +194,8 @@ MonoBehaviour:
   - {fileID: 1340243808699649362, guid: 442ddc9fe67617240b073bc0eda482e3, type: 3}
   effectCount: 0
   video: {fileID: 0}
+  countdownClip: {fileID: 32900000, guid: 6125721949278c644b2b6078e7782154, type: 3}
+  calibrationClip: {fileID: 32900000, guid: 703372d29fc08d847a8fafb0bcba5d55, type: 3}
   id1: 0
   id2: 0
   x1: 0
