@@ -16,6 +16,7 @@ Beysionはベイブレードの対戦に合わせて軌跡などのエフェク�
 
 ## 使用方法
 Unity 2022.3.15f1 で動作確認済みです。
+実行する際はbeysion-trackerを先に起動しておく必要があります。
 1. 以下のコマンドでクローン
 ```bash
 git clone https://github.com/rowest4x/beysion-unity.git
