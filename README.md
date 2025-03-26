@@ -21,5 +21,5 @@ Unity 2022.3.15f1 で動作確認済みです。
 ```bash
 git clone https://github.com/rowest4x/beysion-unity.git
 ```
-3. Unity Hub を開く
-4. 「Add」ボタンをクリックして、クローンしたプロジェクトのフォルダを選択
+2. Unity Hub を開く
+3. 「Add」ボタンをクリックして、クローンしたプロジェクトのフォルダを選択
