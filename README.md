@@ -23,3 +23,4 @@ git clone https://github.com/rowest4x/beysion-unity.git
 ```
 2. Unity Hub を開く
 3. 「Add」ボタンをクリックして、クローンしたプロジェクトのフォルダを選択
+4. Projectタブで Assets > scene2 > scene2 を開く
